@@ -28,13 +28,13 @@ function ContactUs() {
               Tell us about your product, accessibility goals, or research
               needs. We will respond with recommendations and next steps.
             </p>
-            <div className="flex flex-row items-center justify-between rounded-2xl border border-base-300/70 bg-base-200/60 p-4 mt-10">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-base-content/60">
+            <div className="flex flex-row items-center justify-between rounded-2xl border border-primary/40 bg-base-200/60 p-4 mt-10">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-primary/80">
                 Email
               </p>
               <a
                 href="mailto:dev.auraui@gmail.com"
-                className="text-base text-secondary/80"
+                className="text-base text-base-content/75"
               >
                 dev.auraui@gmail.com
               </a>
