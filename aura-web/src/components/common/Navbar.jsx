@@ -10,6 +10,12 @@ export default function Navbar({
   rightItems = [],
 }) {
   const { user, logout } = useAuth();
+  const closeDetails = (event) => {
+    const details = event.currentTarget.closest("details");
+    if (details) {
+      details.open = false;
+    }
+  };
 
   return (
     <div className="navbar relative bg-base-300 shadow-sm px-4 py-3 sticky top-0 z-50 glass-effect">
@@ -43,7 +49,15 @@ export default function Navbar({
                     <ul className="p-2 bg-base-100">
                       {item.children.map((sub) => (
                         <li key={sub.label}>
-                          <NavLink to={sub.to}>{sub.label}</NavLink>
+                          <NavLink
+                            to={sub.to}
+                            className={({ isActive }) =>
+                              isActive ? "text-primary font-semibold bg-base-100" : ""
+                            }
+                            onClick={closeDetails}
+                          >
+                            {sub.label}
+                          </NavLink>
                         </li>
                       ))}
                     </ul>
@@ -51,7 +65,14 @@ export default function Navbar({
                 </li>
               ) : (
                 <li key={item.label}>
-                  <NavLink to={item.to}>{item.label}</NavLink>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      isActive ? "text-primary font-semibold bg-base-100" : ""
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
                 </li>
               )
             )}
@@ -99,18 +120,33 @@ export default function Navbar({
                   <ul className="p-2 bg-base-200 w-40">
                     {item.children.map((sub) => (
                       <li key={sub.label}>
-                        <NavLink to={sub.to}>{sub.label}</NavLink>
-                      </li>
-                    ))}
-                  </ul>
-                </details>
-              </li>
-            ) : (
-              <li key={item.label}>
-                <NavLink to={item.to}>{item.label}</NavLink>
-              </li>
-            )
-          )}
+                          <NavLink
+                            to={sub.to}
+                            className={({ isActive }) =>
+                              isActive ? "text-primary font-semibold bg-base-100" : ""
+                            }
+                            onClick={closeDetails}
+                          >
+                            {sub.label}
+                          </NavLink>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                </li>
+              ) : (
+                <li key={item.label}>
+                  <NavLink
+                    to={item.to}
+                    className={({ isActive }) =>
+                      isActive ? "text-primary font-semibold bg-base-100" : ""
+                    }
+                  >
+                    {item.label}
+                  </NavLink>
+                </li>
+              )
+            )}
         </ul>
       </div>
 
