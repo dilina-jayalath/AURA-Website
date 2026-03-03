@@ -16,6 +16,7 @@ import {
   AdaptiveCard,
   AdaptiveTable,
 } from "@aura/aura-adaptor";
+import auraTextLogo from "../../assets/images/image.jpg";
 
 const USER_TYPES = ["Baseline", "Visual", "Motor", "Low literacy"];
 const PREVIEW_COMPONENTS = [
@@ -217,6 +218,10 @@ export default function SimulationLab() {
     }
 
     if (activePreview === "card") {
+      const imageFrameStyle = {
+        padding: `${Math.max(8, Math.round(profile.element_padding_y * 0.6))}px`,
+      };
+
       return (
         <PreviewBlock title="Adaptive Card">
           <AdaptiveCard variant="data" detailed>
@@ -225,6 +230,16 @@ export default function SimulationLab() {
               <AdaptiveText muted>
                 3 critical contrast checks completed. 2 motor adjustments pending.
               </AdaptiveText>
+              <div
+                className={`mt-0 mx-40 rounded-xl border bg-base-100/10 `}
+                style={imageFrameStyle}
+              >
+                <img
+                  src={auraTextLogo}
+                  alt="AURA adaptation preview"
+                  className="h-36 w-full rounded-md object-contain"
+                />
+              </div>
               <AdaptiveCard.Divider />
               <AdaptiveText variant="caption" muted>
                 Simplified layouts hide secondary details when needed.
@@ -283,7 +298,7 @@ export default function SimulationLab() {
         </AdaptiveNavbar>
       </PreviewBlock>
     );
-  }, [activePreview, tableColumns, tableRows]);
+  }, [activePreview, profile, tableColumns, tableRows]);
 
   return (
     <section className="space-y-4">
@@ -294,13 +309,13 @@ export default function SimulationLab() {
         </p>
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-primary/30 bg-base-200/60 p-5 shadow-sm">
+      <div className="grid gap-4">
+        <div className="rounded-2xl border border-primary/30 bg-base-200/60 p-4 shadow-sm">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
             Controls
           </p>
 
-          <div className="mt-5 space-y-5">
+          <div className="mt-4 space-y-4">
             <label className="block">
               <span className="text-sm font-semibold text-slate-200">
                 View as user type
@@ -308,7 +323,7 @@ export default function SimulationLab() {
               <select
                 value={userType}
                 onChange={(event) => setUserType(event.target.value)}
-                className="mt-2 w-full rounded-lg border border-base-300 bg-base-100/70 px-3 py-2 text-sm text-slate-100"
+                className="mt-1.5 w-full rounded-lg border border-base-300 bg-base-100/70 px-3 py-2 text-sm text-slate-100"
               >
                 {USER_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -322,7 +337,7 @@ export default function SimulationLab() {
               <span className="text-sm font-semibold text-slate-200">
                 Severity slider
               </span>
-              <div className="mt-3">
+              <div className="mt-2">
                 <input
                   type="range"
                   min="0"
