@@ -6,6 +6,7 @@ import DeveloperLayout from "./layouts/DevLayout";
 import ClientLayout from "./layouts/ClientLayout";
 
 import LandingPage from "./routes/public/LandingPage";
+import ComingSoon from "./routes/public/ComingSoon";
 import Pricing from "./routes/public/Pricing";
 import DocsLayout from "./routes/docs/DocsLayout";
 import DocsContent from "./routes/docs/DocsContent";
@@ -25,9 +26,11 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
+          <Route path="/" element={<ComingSoon />} />
+
           {/* Landing / marketing / docs */}
           <Route element={<LandingLayout />}>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<LandingPage />} />
             <Route path="/pricing" element={<Pricing />} />
 
             <Route path="/docs" element={<DocsLayout />}>

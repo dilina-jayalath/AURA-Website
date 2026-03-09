@@ -8,7 +8,7 @@ export default function LandingLayout() {
       <Navbar
         brand="AURA"
         menuItems={[
-          { label: "Home", to: "/" },
+          { label: "Home", to: "/home" },
           { label: "Pricing", to: "/pricing" },
           {
             label: "Docs",
