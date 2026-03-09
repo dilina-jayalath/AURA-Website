@@ -7,56 +7,40 @@ function ComingSoon() {
 
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // Ambient background blob float
+      // Gentle background breathing effect
       gsap.to(".bg-blob-1", {
-        y: 40,
-        x: -30,
+        y: "30px",
+        x: "-30px",
+        scale: 1.05,
+        duration: 6,
+        yoyo: true,
+        repeat: -1,
+        ease: "sine.inOut"
+      });
+
+      gsap.to(".bg-blob-2", {
+        y: "-30px",
+        x: "30px",
+        scale: 1.05,
         duration: 7,
         yoyo: true,
         repeat: -1,
-        ease: "sine.inOut",
-      });
-      gsap.to(".bg-blob-2", {
-        y: -40,
-        x: 30,
-        duration: 9,
-        yoyo: true,
-        repeat: -1,
-        ease: "sine.inOut",
+        ease: "sine.inOut"
       });
 
-      // Staggered entrance for supporting elements
+      // Smooth staggered entrance for all items
       gsap.fromTo(
-        ".fade-up",
-        { y: 36, opacity: 0 },
-        { y: 0, opacity: 1, duration: 1, stagger: 0.14, ease: "power3.out", delay: 0.5 }
-      );
-
-      // Heading — large entrance then continuous gentle float
-      gsap.fromTo(
-        ".hero-heading",
-        { y: 60, opacity: 0, scale: 0.96 },
+        ".animate-item",
+        { y: 40, opacity: 0 },
         {
-          y: 0, opacity: 1, scale: 1, duration: 1.6, ease: "expo.out", delay: 0.2,
-          onComplete: () => {
-            gsap.to(".hero-heading", {
-              y: -12,
-              duration: 4,
-              yoyo: true,
-              repeat: -1,
-              ease: "sine.inOut",
-            });
-          }
+          y: 0,
+          opacity: 1,
+          duration: 1.2,
+          stagger: 0.15,
+          ease: "power3.out",
+          delay: 0.2
         }
       );
-
-      // Continuous gradient shine on "coming soon"
-      gsap.to(".shine-text", {
-        backgroundPosition: "200% center",
-        duration: 7,
-        ease: "none",
-        repeat: -1,
-      });
     }, containerRef);
 
     return () => ctx.revert();
@@ -65,81 +49,71 @@ function ComingSoon() {
   return (
     <section
       ref={containerRef}
-      className="relative isolate flex min-h-screen w-full flex-col items-center justify-center overflow-hidden bg-base-100 px-8 py-24 sm:px-16 lg:px-24 selection:bg-primary/20"
+      className="relative isolate flex min-h-screen items-center justify-center overflow-hidden bg-base-100 px-6 py-16 lg:px-8 font-sans selection:bg-primary/30"
     >
-      {/* Ambient blobs */}
+      {/* Abstract Background Blurs */}
       <div
         aria-hidden="true"
-        className="bg-blob-1 pointer-events-none absolute -top-40 left-1/4 -z-10 h-[700px] w-[700px] -translate-x-1/2 rounded-full bg-primary/10 blur-[160px]"
+        className="bg-blob-1 pointer-events-none absolute left-1/3 top-0 -z-10 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[120px]"
       />
       <div
         aria-hidden="true"
-        className="bg-blob-2 pointer-events-none absolute -bottom-40 right-1/4 -z-10 h-[600px] w-[600px] translate-x-1/2 rounded-full bg-secondary/10 blur-[160px]"
+        className="bg-blob-2 pointer-events-none absolute bottom-0 right-1/3 -z-10 h-[500px] w-[500px] translate-x-1/3 translate-y-1/3 rounded-full bg-secondary/10 blur-[120px]"
       />
 
-      {/* === Inner layout — full‑width, left‑aligned like Apple / Tailwind === */}
-      <div className="w-full max-w-screen-2xl mx-auto flex flex-col items-start">
-
+      <div className="mx-auto max-w-5xl text-center">
         {/* Logo */}
-        <div className="fade-up opacity-0 mb-14">
+        <div className="animate-item opacity-0 flex justify-center mb-10">
           <img
             src={logos.aura}
-            alt="AURA"
-            className="h-12 w-auto sm:h-14 opacity-90 hover:opacity-100 transition-opacity duration-500"
+            alt="AURA logo"
+            className="h-14 w-auto sm:h-32 drop-shadow-sm transition-transform hover:scale-105 duration-500"
           />
         </div>
 
-        {/* Status pill */}
-        <div className="fade-up opacity-0 mb-10">
-          <span className="inline-flex items-center gap-2.5 rounded-full border border-base-content/10 bg-base-content/5 px-5 py-2 text-sm font-medium text-base-content/75 backdrop-blur-sm">
+        {/* Status Badge */}
+        <div className="animate-item opacity-0 mb-8">
+          <span className="inline-flex items-center gap-2.5 rounded-full border border-base-content/10 bg-base-content/5 px-4 py-1.5 text-sm font-medium text-base-content/80 backdrop-blur-md transition-colors hover:bg-base-content/10">
             <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-70" />
-              <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
             </span>
             In Development
           </span>
         </div>
 
-        {/* Hero heading */}
-        <h1 className="hero-heading opacity-0 w-full text-left font-light tracking-tighter text-base-content leading-[1.03] mb-12
-                       text-[clamp(3rem,9vw,9rem)]">
-          Something great is
-          <br />
-          <span className="shine-text font-semibold text-transparent bg-clip-text
-                           bg-gradient-to-r from-primary via-secondary to-primary
-                           bg-[length:200%_auto]">
-            coming soon.
+        {/* Main Heading */}
+        <h1 className="animate-item opacity-0 text-5xl font-light tracking-tight text-balance text-base-content sm:text-7xl mb-8">
+          Something great is{" "}
+          <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">
+            coming soon
           </span>
         </h1>
 
-        {/* Divider */}
-        <div className="fade-up opacity-0 w-full border-t border-base-content/10 mb-10" />
+        {/* Subtitle */}
+        <p className="animate-item opacity-0 text-lg text-pretty text-base-content/70 sm:text-xl font-light mb-8 max-w-xl mx-auto">
+          We are actively building this experience. Please check back soon for
+          the full launch.
+        </p>
 
-        {/* Two‑column description row */}
-        <div className="fade-up opacity-0 w-full grid grid-cols-1 md:grid-cols-2 gap-10 mb-14">
-          <p className="text-xl sm:text-2xl font-light text-base-content/65 leading-relaxed">
-            We are actively building this experience. Please check back soon for the full launch.
-          </p>
-          <p className="text-lg sm:text-xl font-light text-base-content/45 leading-relaxed">
-            AURA builds adaptive, accessible user experiences with intelligent personalization.
-            We're currently collecting real user feedback to improve the platform.
-          </p>
-        </div>
+        {/* Description */}
+        <p className="animate-item opacity-0 mx-auto mt-6 max-w-4xl text-base text-base-content/50 sm:text-lg font-light leading-relaxed mb-12">
+          AURA is focused on building adaptive, accessible user experiences with
+          intelligent personalization. We are currently collecting real user
+          feedback and interaction data to improve the platform.
+        </p>
 
-        {/* CTA */}
-        <div className="fade-up opacity-0">
+        {/* CTA Button */}
+        <div className="animate-item opacity-0">
           <a
             href="https://aura-dataset-collection-survey.vercel.app/"
             target="_blank"
             rel="noreferrer"
-            className="group inline-flex items-center gap-3 rounded-full bg-base-content
-                       px-9 py-4 text-base font-medium text-base-100
-                       transition-all duration-300 hover:scale-105 hover:shadow-2xl
-                       hover:shadow-base-content/10 active:scale-95"
+            className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-base-content px-8 py-4 text-sm font-medium text-base-100 transition-all hover:scale-105 hover:shadow-xl hover:shadow-base-content/10 active:scale-95"
           >
-            Support Data Collection Survey
+            <span>Support Data Collection Survey</span>
             <svg
-              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-2"
+              className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
