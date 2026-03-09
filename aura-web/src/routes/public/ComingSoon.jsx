@@ -106,7 +106,7 @@ function ComingSoon() {
         {/* CTA Button */}
         <div className="animate-item opacity-0">
           <a
-            href="https://aura-dataset-collection-survey.vercel.app/"
+            href="https://survey.auraui.org/"
             target="_blank"
             rel="noreferrer"
             className="group relative inline-flex items-center justify-center gap-3 rounded-full bg-base-content px-8 py-4 text-sm font-medium text-base-100 transition-all hover:scale-105 hover:shadow-xl hover:shadow-base-content/10 active:scale-95"
