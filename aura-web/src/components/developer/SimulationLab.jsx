@@ -15,7 +15,7 @@ import {
   AdaptiveTooltip,
   AdaptiveCard,
   AdaptiveTable,
-} from "@aura/aura-adaptor";
+} from "@aura-adaptive/aura-ui-adaptor";
 import auraTextLogo from "../../assets/images/image.jpg";
 
 const USER_TYPES = ["Baseline", "Visual", "Motor", "Low literacy"];

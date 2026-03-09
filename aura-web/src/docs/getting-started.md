@@ -34,7 +34,7 @@ Before using AURA, it helps to understand three core ideas:
 AURA provides drop-in React components (buttons, forms, tables, layouts, etc.) that automatically adapt based on personalization data.
 
 ```jsx
-import { AdaptiveButton } from "@aura/aura-adaptor";
+import { AdaptiveButton } from "@aura-adaptive/aura-ui-adaptor";
 
 <AdaptiveButton>
   Continue

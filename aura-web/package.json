@@ -19,7 +19,7 @@
     "react-router-dom": "^7.10.1",
     "remark-gfm": "^4.0.1",
     "tailwindcss": "^4.1.17",
-    "@aura/aura-adaptor": "file:../../NPM-Package"
+    "@aura-adaptive/aura-ui-adaptor": "^1.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

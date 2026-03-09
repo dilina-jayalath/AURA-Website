@@ -14,7 +14,7 @@ Conventions:
 - Avoid object spread when merging style objects; use the manual merge pattern in components.
 - Keep components resilient to missing props and rely on `AdaptiveComponentProps`.
 
-## NPM package exports (`@aura/aura-adaptor`)
+## NPM package exports (`@aura-adaptive/aura-ui-adaptor`)
 
 ### Runtime exports
 
@@ -53,7 +53,7 @@ Conventions:
 ### 1) Install the package
 
 ```bash
-npm install @aura/aura-adaptor
+npm install @aura-adaptive/aura-ui-adaptor
 ```
 
 If your app does not already include React peer deps:
@@ -68,7 +68,7 @@ Use `simulateExtensionInstalled={true}` for local development without the browse
 
 ```jsx
 import React from "react";
-import { AdaptiveProvider } from "@aura/aura-adaptor";
+import { AdaptiveProvider } from "@aura-adaptive/aura-ui-adaptor";
 import App from "./App";
 
 export default function Root() {
@@ -84,14 +84,14 @@ export default function Root() {
 
 ```jsx
 import React from "react";
-import { AdaptiveCard, AdaptiveText, AdaptiveButton } from "@aura/aura-adaptor";
+import { AdaptiveCard, AdaptiveText, AdaptiveButton } from "@aura-adaptive/aura-ui-adaptor";
 ```
 
 ### 4) Create a simple adaptive card (image + title + text + action button)
 
 ```jsx
 import React from "react";
-import { AdaptiveCard, AdaptiveText, AdaptiveButton } from "@aura/aura-adaptor";
+import { AdaptiveCard, AdaptiveText, AdaptiveButton } from "@aura-adaptive/aura-ui-adaptor";
 
 export default function ProductCard() {
   return (
