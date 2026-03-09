@@ -63,11 +63,11 @@ function ComingSoon() {
 
       <div className="mx-auto max-w-5xl text-center">
         {/* Logo */}
-        <div className="animate-item opacity-0 flex justify-center mb-10">
+        <div className="animate-item opacity-0 flex justify-center mb-4">
           <img
             src={logos.aura}
             alt="AURA logo"
-            className="h-14 w-auto sm:h-32 drop-shadow-sm transition-transform hover:scale-105 duration-500"
+            className="h-18 w-auto sm:h-32 drop-shadow-sm transition-transform hover:scale-105 duration-500"
           />
         </div>
 
