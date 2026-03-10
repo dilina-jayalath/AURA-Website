@@ -1,10 +1,20 @@
 import React from "react";
-import PageContainer from "../../components/layout/PageContainer";
-import { PageSection } from "../../components/layout/PageSection";
 import HeroSection from "../../components/sections/HeroSection";
+import FeaturesSection from "../../components/sections/FeaturesSection";
+import HowItWorksSection from "../../components/sections/HowItWorksSection";
+import ComponentShowcase from "../../components/sections/ComponentShowcase";
+import InstallCtaSection from "../../components/sections/InstallCtaSection";
 
 function LandingPage() {
-  return <><HeroSection /></>;
+  return (
+    <>
+      <HeroSection />
+      <FeaturesSection />
+      <HowItWorksSection />
+      <ComponentShowcase />
+      <InstallCtaSection />
+    </>
+  );
 }
 
 export default LandingPage;

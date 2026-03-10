@@ -1,8 +1,14 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Navbar from "../components/common/Navbar";
 import Footer from "../components/common/Footer";
 
+/** Pages that show the full footer */
+const FULL_FOOTER_PATHS = ["/"];
+
 export default function LandingLayout() {
+  const { pathname } = useLocation();
+  const showFullFooter = FULL_FOOTER_PATHS.includes(pathname);
+
   return (
     <div className="min-h-screen flex flex-col">
       <Navbar
@@ -14,7 +20,8 @@ export default function LandingLayout() {
             label: "Docs",
             children: [
               { label: "Getting Started", to: "/docs/getting-started" },
-              { label: "Components", to: "/docs/components" },
+              { label: "Installation", to: "/docs/installation" },
+              { label: "API Reference", to: "/docs/api-reference" },
             ],
           },
           { label: "Contact Us", to: "/contact-us" },
@@ -29,7 +36,16 @@ export default function LandingLayout() {
         <Outlet />
       </main>
 
-      <Footer />
+      {showFullFooter ? (
+        <Footer />
+      ) : (
+        /* Copyright-only bar for Pricing, ContactUs, etc. */
+        <div className="bg-base-200 border-t border-base-300 py-4 text-center">
+          <p className="text-xs text-base-content/30">
+            © {new Date().getFullYear()} AURA. All rights reserved.
+          </p>
+        </div>
+      )}
     </div>
   );
 }

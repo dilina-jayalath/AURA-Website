@@ -8,93 +8,96 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    setError("");
     try {
       const user = await login(form);
-
-      // redirect based on role
       if (user.role === "developer") navigate("/dev/dashboard");
       else navigate("/client/dashboard");
     } catch (err) {
-      alert("Login failed");
+      setError("Invalid credentials. Please try again.");
     }
   };
 
   return (
-    <div className="flex min-h-screen flex-col justify-center px-6 py-12 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-sm">
-        <img src={logos.aura} alt="AURA" className="mx-auto h-15 w-auto" />
-        <h2 className="mt-2 text-center text-2xl font-bold tracking-tight">
-          Welcome Back!
-        </h2>
-      </div>
-      <ExitButton />
-      <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Email */}
-          <div>
-            <label htmlFor="email" className="input w-full">
-              <input
-                id="email"
-                name="email"
-                type="email"
-                autoComplete="email"
-                placeholder="Email address"
-                required
-                value={form.email}
-                onChange={handleChange}
-              />
-            </label>
-          </div>
+    <div className="min-h-screen flex items-center justify-center bg-base-100 px-4">
+      <div className="w-full max-w-sm">
+        {/* Header */}
+        <div className="text-center mb-8">
+          <Link to="/">
+            <img src={logos.aura} alt="AURA" className="mx-auto h-14 w-auto mb-4" />
+          </Link>
+          <h1 className="text-2xl font-bold text-base-content tracking-tight">Welcome back</h1>
+          <p className="mt-1 text-sm text-base-content/50">Sign in to your AURA account</p>
+        </div>
 
-          {/* Password */}
-          <div>
-            <label htmlFor="password" className="input w-full">
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                placeholder="Password"
-                required
-                value={form.password}
-                onChange={handleChange}
-              />
-            </label>
-            <Link to="/forgot" className="text-xs font-semibold hover:text-indigo-300 mt-2 block text-right">
-              Forgot password?
-            </Link>
-          </div>
+        <ExitButton />
 
-          {/* Submit button */}
-          <div>
-            <button
-              type="submit"
-              className="btn btn-primary w-full mt-4"
-            >
+        {/* Card */}
+        <div className="bg-base-200 border border-base-300 rounded-2xl p-7 shadow-sm">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {error && (
+              <div className="text-sm text-error bg-error/10 border border-error/20 rounded-lg px-3 py-2">
+                {error}
+              </div>
+            )}
+
+            <div className="space-y-1">
+              <label className="text-xs font-medium text-base-content/60 uppercase tracking-wide">
+                Email
+              </label>
+              <label className="input w-full">
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  placeholder="you@example.com"
+                  required
+                  value={form.email}
+                  onChange={handleChange}
+                />
+              </label>
+            </div>
+
+            <div className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-medium text-base-content/60 uppercase tracking-wide">
+                  Password
+                </label>
+                <Link to="/forgot" className="text-xs text-primary hover:underline">
+                  Forgot password?
+                </Link>
+              </div>
+              <label className="input w-full">
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  autoComplete="current-password"
+                  placeholder="••••••••"
+                  required
+                  value={form.password}
+                  onChange={handleChange}
+                />
+              </label>
+            </div>
+
+            <button type="submit" className="btn btn-primary w-full mt-2">
               Sign in
             </button>
-          </div>
-        </form>
+          </form>
+        </div>
 
-        {/* Footer */}
-        <p className="mt-10 text-center text-sm text-gray-400">
+        <p className="mt-6 text-center text-sm text-base-content/50">
           Not a member?{" "}
-          <Link
-            to="/register"
-            className="font-semibold text-indigo-400 hover:text-indigo-300"
-          >
+          <Link to="/register" className="font-semibold text-primary hover:underline">
             Create an account
           </Link>
         </p>
