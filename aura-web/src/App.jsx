@@ -18,7 +18,7 @@ import RegisterPage from "./routes/auth/RegisterPage";
 import ClientDashboard from "./routes/client/ClientDashboard";
 import DevDashboard from "./routes/developer/DevDashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
-import { AdaptiveProvider } from "@aura/aura-adaptor";
+import { AdaptiveProvider } from "@aura-adaptive/aura-ui-adaptor";
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 const RL_URL = import.meta.env.VITE_RL_URL || 'http://localhost:8000/rl';
@@ -29,39 +29,18 @@ function AppWithAdaptive() {
   const userId = user?.id || 'u_001';
 
   return (
-    <AuthProvider>
-      <BrowserRouter>
-        <Routes>
-          {/* Landing / marketing */}
-          <Route element={<LandingLayout />}>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/pricing" element={<Pricing />} />
-            <Route path="/contact-us" element={<ContactUs />} />
-          </Route>
-
-          {/* Docs — own shell, no footer, sticky sidebar */}
-          <Route path="/docs" element={<DocsShellLayout />}>
-            <Route path="*" element={<DocsLayout />} />
-          </Route>
-
-          {/* Auth */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-
-          {/* Developer area */}
-          <Route
-            path="/dev"
-            element={
-              <ProtectedRoute allowedRoles={["developer"]}>
-                <DeveloperLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<DevDashboard />} />
-          </Route>
-
+    <AdaptiveProvider userId={userId} apiUrl={API_URL} rlUrl={RL_URL}>
+      <Routes>
+        {/* Landing / marketing */}
+        <Route element={<LandingLayout />}>
+          <Route path="/" element={<LandingPage />} />
+          <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact-us" element={<ContactUs />} />
+        </Route>
+
+        {/* Docs — own shell, no footer, sticky sidebar */}
+        <Route path="/docs" element={<DocsShellLayout />}>
+          <Route path="*" element={<DocsLayout />} />
         </Route>
 
         {/* Auth pages (no dashboard chrome) */}
