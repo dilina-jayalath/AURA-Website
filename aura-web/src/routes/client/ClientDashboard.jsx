@@ -1,8 +1,9 @@
 import React from 'react'
+import DashboardContainer from '../../features/dashboard/DashboardContainer'
 
 function ClientDashboard() {
   return (
-    <div>ClientDashboard</div>
+    <DashboardContainer />
   )
 }
 

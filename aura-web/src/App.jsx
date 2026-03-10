@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
+import { useAuthContext } from "./context/AuthContext";
 
 import LandingLayout from "./layouts/LandingLayout";
 import DocsShellLayout from "./layouts/DocsShellLayout";
@@ -17,8 +18,16 @@ import RegisterPage from "./routes/auth/RegisterPage";
 import ClientDashboard from "./routes/client/ClientDashboard";
 import DevDashboard from "./routes/developer/DevDashboard";
 import ProtectedRoute from "./routes/ProtectedRoute";
+import { AdaptiveProvider } from "@aura/aura-adaptor";
 
-function App() {
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const RL_URL = import.meta.env.VITE_RL_URL || 'http://localhost:8000/rl';
+
+// Inner component so it can access AuthContext
+function AppWithAdaptive() {
+  const { user } = useAuthContext();
+  const userId = user?.id || 'u_001';
+
   return (
     <AuthProvider>
       <BrowserRouter>
@@ -52,19 +61,48 @@ function App() {
             <Route path="dashboard" element={<DevDashboard />} />
           </Route>
 
-          {/* Client area */}
-          <Route
-            path="/client"
-            element={
-              <ProtectedRoute allowedRoles={["client"]}>
-                <ClientLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate to="dashboard" replace />} />
-            <Route path="dashboard" element={<ClientDashboard />} />
-          </Route>
-        </Routes>
+          <Route path="/contact-us" element={<ContactUs />} />
+        </Route>
+
+        {/* Auth pages (no dashboard chrome) */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+
+        {/* Developer area */}
+        <Route
+          path="/dev"
+          element={
+            <ProtectedRoute allowedRoles={["developer"]}>
+              <DeveloperLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<DevDashboard />} />
+        </Route>
+
+        {/* Client area */}
+        <Route
+          path="/client"
+          element={
+            <ProtectedRoute allowedRoles={["client"]}>
+              <ClientLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<ClientDashboard />} />
+        </Route>
+      </Routes>
+    </AdaptiveProvider>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+      <BrowserRouter>
+        <AppWithAdaptive />
       </BrowserRouter>
     </AuthProvider>
   );
