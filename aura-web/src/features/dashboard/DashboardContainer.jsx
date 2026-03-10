@@ -37,6 +37,7 @@ function AppContent({ userId, onUserChange }) {
     redo,
     revertToVersion,
     addChange,
+    refreshHistory,
     stats
   } = useHistory(userId);
 
@@ -77,13 +78,15 @@ function AppContent({ userId, onUserChange }) {
     const confidenceText = confidence ? ` (${(confidence * 100).toFixed(0)}% confident)` : '';
     const reasonText = reason ? ` - ${reason}` : '';
     showToast(`RL Auto-Applied: ${updates}${confidenceText}${reasonText}`, 'success');
-    loadUserData(); // Reload to get updated settings
+    loadUserData();
+    refreshHistory();
   };
 
   const handleManualSettingChange = (changeInfo) => {
     const { parameter, oldValue, newValue } = changeInfo;
     showToast(`Manual Change: ${parameter} changed from ${oldValue} to ${newValue} (RL model learning...)`, 'info');
     loadUserData();
+    refreshHistory();
   };
 
   const showToast = (message, type = 'success') => {
@@ -134,8 +137,7 @@ function AppContent({ userId, onUserChange }) {
 
   const handleClearHistory = () => {
     if (window.confirm('Are you sure you want to clear all history? This cannot be undone.')) {
-      localStorage.removeItem(`history_${userId}`);
-      window.location.reload();
+      refreshHistory();
     }
   };
 

@@ -30,72 +30,34 @@ function FeedbackHistory({ userId, refreshKey }) {
 
   const getMockFeedback = () => {
     return [
-        {
-          id: 1,
-          timestamp: new Date(Date.now() - 86400000 * 2).toISOString(),
-          rating: 5,
-          feedbackType: 'positive',
-          comment: 'Love the new dark theme! Much easier on my eyes.',
-          componentId: 'theme_switcher',
-          resultingChanges: [
-            { setting: 'theme', oldValue: 'light', newValue: 'dark' },
-            { setting: 'contrast_mode', oldValue: 'normal', newValue: 'high' }
-          ],
-          status: 'applied',
-          impact: 'high'
-        },
-        {
-          id: 2,
-          timestamp: new Date(Date.now() - 86400000).toISOString(),
-          rating: 4,
-          feedbackType: 'neutral',
-          comment: 'Font size is better but could be a bit larger',
-          componentId: 'text_display',
-          resultingChanges: [
-            { setting: 'font_size', oldValue: 'medium', newValue: 'large' }
-          ],
-          status: 'applied',
-          impact: 'medium'
-        },
-        {
-          id: 3,
-          timestamp: new Date(Date.now() - 3600000 * 5).toISOString(),
-          rating: 3,
-          feedbackType: 'negative',
-          comment: 'Buttons are still too small for me to click accurately',
-          componentId: 'button_group',
-          resultingChanges: [
-            { setting: 'target_size', oldValue: 24, newValue: 32 },
-            { setting: 'element_spacing', oldValue: 'normal', newValue: 'wide' }
-          ],
-          status: 'applied',
-          impact: 'high'
-        },
-        {
-          id: 4,
-          timestamp: new Date(Date.now() - 3600000 * 2).toISOString(),
-          rating: 5,
-          feedbackType: 'positive',
-          comment: 'Perfect! Everything is so much more accessible now.',
-          componentId: 'overall_ui',
-          resultingChanges: [],
-          status: 'acknowledged',
-          impact: 'low'
-        },
-        {
-          id: 5,
-          timestamp: new Date(Date.now() - 3600000).toISOString(),
-          rating: 2,
-          feedbackType: 'negative',
-          comment: 'Line height feels cramped when reading long text',
-          componentId: 'content_area',
-          resultingChanges: [
-            { setting: 'line_height', oldValue: 1.5, newValue: 1.8 }
-          ],
-          status: 'pending',
-          impact: 'medium'
-        }
-      ];
+      {
+        _id: '1',
+        userId: 'demo',
+        optimization: { parameter: 'theme', oldValue: 'light', newValue: 'dark', suggestedBy: 'rl' },
+        feedback: { type: 'positive', rating: 5, comment: 'Love the new dark theme! Much easier on my eyes.', timestamp: new Date(Date.now() - 86400000 * 2).toISOString() },
+        reward: { value: 1.4, normalized: 1 },
+        processed: true,
+        createdAt: new Date(Date.now() - 86400000 * 2).toISOString(),
+      },
+      {
+        _id: '2',
+        userId: 'demo',
+        optimization: { parameter: 'font_size', oldValue: 14, newValue: 18, suggestedBy: 'rl' },
+        feedback: { type: 'neutral', rating: 4, comment: 'Font size is better but could be a bit larger', timestamp: new Date(Date.now() - 86400000).toISOString() },
+        reward: { value: 0.4, normalized: 0.4 },
+        processed: true,
+        createdAt: new Date(Date.now() - 86400000).toISOString(),
+      },
+      {
+        _id: '3',
+        userId: 'demo',
+        optimization: { parameter: 'target_size', oldValue: 24, newValue: 32, suggestedBy: 'rl' },
+        feedback: { type: 'negative', rating: 3, comment: 'Buttons are still too small for me to click accurately', timestamp: new Date(Date.now() - 3600000 * 5).toISOString() },
+        reward: { value: -0.6, normalized: -0.6 },
+        processed: false,
+        createdAt: new Date(Date.now() - 3600000 * 5).toISOString(),
+      },
+    ];
   };
 
   const getFeedbackIcon = (type) => {
@@ -117,13 +79,11 @@ function FeedbackHistory({ userId, refreshKey }) {
     return badges[status] || badges.acknowledged;
   };
 
-  const getImpactBadge = (impact) => {
-    const badges = {
-      high: { class: 'badge-error', text: 'High' },
-      medium: { class: 'badge-ghost', text: 'Medium' },
-      low: { class: 'badge-success', text: 'Low' }
-    };
-    return badges[impact] || badges.low;
+  const getImpactBadge = (reward) => {
+    const val = Math.abs(Number(reward ?? 0));
+    if (val >= 1.0) return { class: 'badge-error', text: 'High' };
+    if (val >= 0.4) return { class: 'badge-warning', text: 'Medium' };
+    return { class: 'badge-success', text: 'Low' };
   };
 
   const getRatingStars = (rating) => {
@@ -240,7 +200,7 @@ function FeedbackHistory({ userId, refreshKey }) {
         {feedbackList.map((feedback) => {
           const status = feedback.processed ? 'applied' : 'pending';
           const statusBadge = getStatusBadge(status);
-          const impactBadge = getImpactBadge(feedback.impact || 'medium');
+          const impactBadge = getImpactBadge(feedback.reward?.value);
           
           return (
             <div key={feedback._id || feedback.id} className="card bg-base-200 shadow-lg hover:shadow-xl transition-all">

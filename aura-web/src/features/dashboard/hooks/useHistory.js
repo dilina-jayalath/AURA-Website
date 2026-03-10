@@ -1,5 +1,35 @@
-import { useState, useEffect, useCallback } from 'react';
-import { applySettings } from '../services/api';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { applySettings, getSettingsHistory, undoChange, redoChange } from '../services/api';
+
+// Map raw API source values to the three display categories
+const SOURCE_MAP = {
+  rl_optimization: 'ml', ml_profile: 'ml', ml_suggestion_accepted: 'ml',
+  ml: 'ml', rl: 'ml', category: 'ml', 'rule-based-fallback': 'ml',
+  user_manual: 'manual', dashboard: 'manual', manual: 'manual',
+  extension: 'manual', revert: 'manual',
+  reset: 'system', undo: 'system', redo: 'system',
+  system: 'system', fallback: 'system', sse: 'system',
+};
+
+function normalizeItem(item) {
+  const source = SOURCE_MAP[item.source] || 'system';
+  const paramLabel = item.parameter ? item.parameter.replace(/_/g, ' ') : null;
+  const name = paramLabel
+    ? `${paramLabel}: ${item.oldValue ?? '—'} → ${item.newValue ?? '—'}`
+    : `Change (${item.source || 'system'})`;
+  return {
+    id: item.id,
+    name,
+    timestamp: item.timestamp,
+    source,
+    description: `Source: ${item.source || 'system'}${item.isUndone ? ' (undone)' : ''}`,
+    settings: item.snapshot || {},
+    parameter: item.parameter,
+    oldValue: item.oldValue,
+    newValue: item.newValue,
+    isUndone: item.isUndone,
+  };
+}
 
 export function useHistory(userId) {
   const [history, setHistory] = useState([]);
@@ -8,139 +38,115 @@ export function useHistory(userId) {
     totalChanges: 0,
     mlChanges: 0,
     manualChanges: 0,
-    currentVersion: 0
+    currentVersion: 0,
   });
+  const loadingRef = useRef(false);
 
-  // Load history from localStorage on mount
-  useEffect(() => {
-    const savedHistory = localStorage.getItem(`history_${userId}`);
-    if (savedHistory) {
-      const parsed = JSON.parse(savedHistory);
-      setHistory(parsed);
-      setCurrentIndex(parsed.length - 1);
-    } else {
-      // Initialize with default state
-      const initialState = {
-        id: Date.now(),
-        name: 'Initial State',
-        timestamp: new Date().toISOString(),
-        source: 'system',
-        description: 'Default application state',
-        settings: {
-          font_size: 'medium',
-          theme: 'light',
-          contrast_mode: 'normal',
-          line_height: 1.5,
-          target_size: 24
-        }
-      };
-      setHistory([initialState]);
-      setCurrentIndex(0);
+  const loadHistory = useCallback(async () => {
+    if (!userId || loadingRef.current) return;
+    loadingRef.current = true;
+    try {
+      const raw = await getSettingsHistory(userId, 100);
+      if (raw.length > 0) {
+        const normalized = raw.map(normalizeItem);
+        setHistory(normalized);
+        // Point currentIndex at the latest non-undone entry
+        const activeIdx = normalized.reduce((best, item, i) => (!item.isUndone ? i : best), -1);
+        setCurrentIndex(activeIdx >= 0 ? activeIdx : normalized.length - 1);
+      } else {
+        setHistory([]);
+        setCurrentIndex(-1);
+      }
+    } catch {
+      // leave whatever was already set
+    } finally {
+      loadingRef.current = false;
     }
   }, [userId]);
+
+  // Fetch from API on mount and whenever userId changes
+  useEffect(() => {
+    loadHistory();
+  }, [loadHistory]);
+
+  // Refresh every 30 s to pick up RL / external changes
+  useEffect(() => {
+    const interval = setInterval(loadHistory, 30000);
+    return () => clearInterval(interval);
+  }, [loadHistory]);
 
   // Update stats whenever history changes
   useEffect(() => {
     const mlChanges = history.filter(h => h.source === 'ml').length;
     const manualChanges = history.filter(h => h.source === 'manual').length;
-    
     setStats({
       totalChanges: history.length,
       mlChanges,
       manualChanges,
-      currentVersion: currentIndex + 1
+      currentVersion: currentIndex + 1,
     });
   }, [history, currentIndex]);
 
-  // Save history to localStorage whenever it changes
-  useEffect(() => {
-    if (history.length > 0) {
-      localStorage.setItem(`history_${userId}`, JSON.stringify(history));
-    }
-  }, [history, userId]);
-
+  // addChange: optimistically insert while the API persists in the background
   const addChange = useCallback((settings, source = 'manual', name, description) => {
+    const displaySource = SOURCE_MAP[source] || 'manual';
     const newChange = {
       id: Date.now(),
       name: name || `Change ${history.length + 1}`,
       timestamp: new Date().toISOString(),
-      source,
-      description: description || '',
-      settings: { ...settings }
+      source: displaySource,
+      description: description || `Source: ${source}`,
+      settings: { ...settings },
     };
-
     const newHistory = [...history.slice(0, currentIndex + 1), newChange];
     setHistory(newHistory);
     setCurrentIndex(newHistory.length - 1);
-
     return newChange;
   }, [history, currentIndex]);
 
   const undo = useCallback(async () => {
-    if (currentIndex <= 0) {
-      return { success: false, error: 'Nothing to undo' };
-    }
-
-    const previousIndex = currentIndex - 1;
-    const previousState = history[previousIndex];
-
     try {
-      await applySettings(userId, previousState.settings, 'undo');
-      setCurrentIndex(previousIndex);
-      return {
-        success: true,
-        name: previousState.name,
-        settings: previousState.settings
-      };
+      const result = await undoChange(userId);
+      if (result.success) {
+        await loadHistory();
+        return { success: true, name: 'Undo applied', settings: result.restoredSettings };
+      }
+      return { success: false, error: result.error || 'Nothing to undo' };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  }, [currentIndex, history, userId]);
+  }, [userId, loadHistory]);
 
   const redo = useCallback(async () => {
-    if (currentIndex >= history.length - 1) {
-      return { success: false, error: 'Nothing to redo' };
-    }
-
-    const nextIndex = currentIndex + 1;
-    const nextState = history[nextIndex];
-
     try {
-      await applySettings(userId, nextState.settings, 'redo');
-      setCurrentIndex(nextIndex);
-      return {
-        success: true,
-        name: nextState.name,
-        settings: nextState.settings
-      };
+      const result = await redoChange(userId);
+      if (result.success) {
+        await loadHistory();
+        return { success: true, name: 'Redo applied', settings: result.restoredSettings };
+      }
+      return { success: false, error: result.error || 'Nothing to redo' };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  }, [currentIndex, history, userId]);
+  }, [userId, loadHistory]);
 
   const revertToVersion = useCallback(async (index) => {
     if (index < 0 || index >= history.length) {
       return { success: false, error: 'Invalid version index' };
     }
-
     const targetState = history[index];
-
     try {
       await applySettings(userId, targetState.settings, 'revert');
-      setCurrentIndex(index);
-      return {
-        success: true,
-        timestamp: targetState.timestamp,
-        settings: targetState.settings
-      };
+      await loadHistory();
+      return { success: true, timestamp: targetState.timestamp, settings: targetState.settings };
     } catch (error) {
       return { success: false, error: error.message };
     }
-  }, [history, userId]);
+  }, [history, userId, loadHistory]);
 
   const currentSettings = history[currentIndex]?.settings || null;
-  const canUndo = currentIndex > 0;
-  const canRedo = currentIndex < history.length - 1;
+  const canUndo = history.some(h => !h.isUndone) && currentIndex > 0;
+  const canRedo = history.some(h => h.isUndone);
 
   return {
     history,
@@ -152,6 +158,7 @@ export function useHistory(userId) {
     redo,
     revertToVersion,
     addChange,
+    refreshHistory: loadHistory,
     stats
   };
 }

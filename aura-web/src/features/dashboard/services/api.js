@@ -140,3 +140,33 @@ export async function updateManualSettings(userId, settings) {
 export async function updateUserSettings(userId, settings) {
   return applySettings(userId, settings, 'rl');
 }
+
+export async function getSettingsHistory(userId, limit = 50) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/users/${userId}/history`, { params: { limit } });
+    return response.data.data || [];
+  } catch (error) {
+    console.error('Error fetching settings history:', error);
+    return [];
+  }
+}
+
+export async function undoChange(userId) {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/${userId}/undo`);
+    return response.data;
+  } catch (error) {
+    console.error('Error undoing change:', error);
+    throw error;
+  }
+}
+
+export async function redoChange(userId) {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/users/${userId}/redo`);
+    return response.data;
+  } catch (error) {
+    console.error('Error redoing change:', error);
+    throw error;
+  }
+}
