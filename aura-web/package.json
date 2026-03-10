@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@aura/aura-adaptor": "file:../../NPM-Package",
+    "@aura/aura-adaptor": "^1.1.0",
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
     "daisyui": "^5.5.8",
