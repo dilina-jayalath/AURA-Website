@@ -33,7 +33,7 @@ function AppWithAdaptive() {
       <Routes>
         {/* Landing / marketing */}
         <Route element={<LandingLayout />}>
-          <Route path="/" element={<LandingPage />} />
+          <Route path="/" element={<ClientDashboard />} />
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/contact-us" element={<ContactUs />} />
         </Route>
