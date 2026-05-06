@@ -1,16 +1,23 @@
 import React, { useEffect, useState } from 'react';
 
 function UserInfo({ userId, userData, onUserChange }) {
-  const [draftId, setDraftId] = useState(userId || '');
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editId, setEditId] = useState(userId || '');
 
   useEffect(() => {
-    setDraftId(userId || '');
+    setEditId(userId || '');
   }, [userId]);
 
-  const handleApply = () => {
-    const trimmed = draftId.trim();
+  const handleConfirm = () => {
+    const trimmed = editId.trim();
     if (!trimmed) return;
     onUserChange(trimmed);
+    setIsEditMode(false);
+  };
+
+  const handleCancel = () => {
+    setEditId(userId || '');
+    setIsEditMode(false);
   };
 
   return (
@@ -26,7 +33,34 @@ function UserInfo({ userId, userData, onUserChange }) {
               </div>
             </div>
             <div>
-              <h3 className="text-xl font-semibold">User ID: {userId}</h3>
+              {!isEditMode ? (
+                <h3 
+                  className="text-xl font-semibold cursor-pointer hover:text-primary transition-colors" 
+                  onClick={() => setIsEditMode(true)}
+                >
+                  User ID: {userId}
+                </h3>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    className="input input-bordered input-sm"
+                    value={editId}
+                    onChange={(e) => setEditId(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') handleConfirm();
+                      if (e.key === 'Escape') handleCancel();
+                    }}
+                    autoFocus
+                  />
+                  <button className="btn btn-xs btn-primary" onClick={handleConfirm}>
+                    Update
+                  </button>
+                  <button className="btn btn-xs btn-ghost" onClick={handleCancel}>
+                    Cancel
+                  </button>
+                </div>
+              )}
               <p className="flex items-center gap-2 text-sm">
                 <span className="relative flex h-3 w-3">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-success opacity-75"></span>
@@ -37,23 +71,6 @@ function UserInfo({ userId, userData, onUserChange }) {
             </div>
           </div>
           <div className="flex items-center gap-3">
-            <label className="input input-bordered flex items-center gap-2">
-              <span className="text-xs uppercase text-base-content/60">Use user</span>
-              <input
-                type="text"
-                className="grow"
-                value={draftId}
-                onChange={(event) => setDraftId(event.target.value)}
-                onKeyDown={(event) => {
-                  if (event.key === 'Enter') {
-                    handleApply();
-                  }
-                }}
-              />
-            </label>
-            <button className="btn btn-primary" onClick={handleApply}>
-              Apply
-            </button>
             <div className="badge badge-outline badge-lg">
               Last updated: {new Date().toLocaleTimeString()}
             </div>
